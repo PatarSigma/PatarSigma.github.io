@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Movie</title>
+    <style>
+        /* Reset default margin and padding */
+        body, h1, p {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            line-height: 1.6;
+        }
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #333;
+        }
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Website Movie</h1>
+    </header>
+
+    <main>
+        <section class="video-container">
+            <video id="movieVideo" controls autoplay muted loop>
+                <source src="sekawanlimo.mp4" type="video/mp4">
+                Browser Anda tidak mendukung tag video.
+            </video>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Website Movie</p>
+    </footer>
+
+    <script>
+        // Mengambil elemen video
+        const video = document.getElementById('movieVideo');
+
+        // Memastikan video diputar secara otomatis saat halaman dimuat
+        video.play();
+
+        // Opsional: Menambahkan event listener untuk menangani error video
+        video.addEventListener('error', () => {
+            console.error('Error: Video tidak dapat diputar.');
+        });
+    </script>
+</body>
+</html>
