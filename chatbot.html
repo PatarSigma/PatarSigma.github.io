@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate AI Chatbot</title>
+    <style>
+        :root {
+            --primary-color: #6e48aa;
+            --secondary-color: #9d50bb;
+            --accent-color: #4776E6;
+            --text-color: #333;
+            --light-text: #f8f9fa;
+            --bg-color: #f5f7fa;
+            --card-color: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .chat-container {
+            width: 95%;
+            max-width: 800px;
+            height: 90vh;
+            background-color: var(--card-color);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text);
+            padding: 20px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.4em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header img {
+            height: 30px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: var(--bg-color);
+        }
+
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background-color: var(--card-color);
+            border-top: 1px solid var(--border-color);
+            align-items: center;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            outline: none;
+            font-size: 16px;
+            transition: all 0.3s;
+            background-color: var(--bg-color);
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(71, 118, 230, 0.2);
+        }
+
+        .send-button {
+            width: 55px;
+            height: 55px;
+            margin-left: 12px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(110, 72, 170, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 15px 20px;
+            border-radius: 20px;
+            word-wrap: break-word;
+            line-height: 1.6;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--light-text);
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+            background-color: var(--card-color);
+            color: var(--text-color);
+            border-bottom-left-radius: 5px;
+            border: 1px solid var(--border-color);
+        }
+
+        .message-content {
+            white-space: pre-wrap;
+        }
+
+        .time-stamp {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .bot-message .time-stamp {
+            color: rgba(0, 0, 0, 0.5);
+        }
+
+        .typing-indicator {
+            display: flex;
+            padding: 15px 20px;
+            align-self: flex-start;
+            background-color: var(--card-color);
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            margin-bottom: 5px;
+        }
+
+        .typing-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin: 0 4px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-5px); opacity: 1; }
+        }
+
+        .api-key-container {
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .save-key-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .save-key-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .markdown-content h1, .markdown-content h2, .markdown-content h3 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+
+        .markdown-content p {
+            margin-bottom: 1em;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+
+        .markdown-content code {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .markdown-content pre {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .markdown-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712035.png" alt="AI Icon">
+            Ultimate AI Chatbot
+        </div>
+        
+        <div id="api-key-container" class="api-key-container" style="display: none;">
+            <input type="password" id="api-key-input" class="api-key-input" placeholder="Masukkan API Key OpenAI Anda">
+            <button id="save-key-btn" class="save-key-btn">Simpan API Key</button>
+            <div style="font-size: 12px; margin-top: 10px; color: #666;">
+                Catatan: API Key disimpan hanya di browser Anda dan tidak dikirim ke server manapun.
+                Dapatkan API Key dari <a href="https://platform.openai.com/api-keys" target="_blank" style="color: var(--primary-color);">platform.openai.com</a>
+            </div>
+        </div>
+        
+        <div id="out" class="chat-messages"></div>
+        <div class="input-container">
+            <input 
+                id="pesan" 
+                type="text" 
+                placeholder="Tanyakan apapun kepada AI..." 
+                onkeypress="handleKeyPress(event)"
+            />
+            <button id="send-btn" onclick="kirimPesan()" class="send-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28">
+                    <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Variabel global
+        let apiKey = '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';
+        let conversationHistory = [];
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('pesan');
+            const sendBtn = document.getElementById('send-btn');
+            
+            // Langsung aktifkan input karena API key sudah ada
+            messageInput.disabled = false;
+            sendBtn.disabled = false;
+            tampilkanPesan("Halo! Saya Ultimate AI Chatbot yang siap menjawab semua pertanyaan Anda dalam bahasa Indonesia. Silakan tanyakan apapun!", 'bot');
+            messageInput.focus();
+        });
+        
+        // Fungsi untuk mendapatkan waktu sekarang
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+        
+        // Fungsi untuk menampilkan indikator typing
+        function tampilkanTypingIndicator() {
+            const out = document.getElementById('out');
+            const typingDiv = document.createElement('div');
+            typingDiv.classList.add('typing-indicator');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            out.appendChild(typingDiv);
+            out.scrollTop = out.scrollHeight;
+        }
+        
+        // Fungsi untuk menghilangkan indikator typing
+        function hilangkanTypingIndicator() {
+            const typingElement = document.getElementById('typing-indicator');
+            if (typingElement) {
+                typingElement.remove();
+            }
+        }
+        
+        // Fungsi utama untuk mengirim pesan
+        async function kirimPesan() {
+            const input = document.getElementById('pesan');
+            const message = input.value.trim();
+            const sendBtn = document.getElementById('send-btn');
+            
+            if (message === '') return;
+            
+            // Disable input selama pemrosesan
+            input.disabled = true;
+            sendBtn.disabled = true;
+            
+            // Tampilkan pesan pengguna
+            tampilkanPesan(message, 'user');
+            conversationHistory.push({ role: 'user', content: message });
+            
+            // Kosongkan input
+            input.value = '';
+            
+            // Tampilkan indikator typing
+            tampilkanTypingIndicator();
+            
+            try {
+                // Kirim permintaan ke API OpenAI dengan instruksi untuk berbahasa Indonesia
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            {
+                                role: "system",
+                                content: "Anda adalah asisten AI yang membantu pengguna. Selalu gunakan bahasa Indonesia yang baik dan benar dalam setiap respons Anda."
+                            },
+                            ...conversationHistory
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 2000
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message);
+                }
+                
+                if (data.choices && data.choices[0]) {
+                    const botResponse = data.choices[0].message.content;
+                    hilangkanTypingIndicator();
+                    tampilkanPesan(botResponse, 'bot');
+                    conversationHistory.push({ role: 'assistant', content: botResponse });
+                } else {
+                    throw new Error('Tidak menerima respons yang valid dari AI');
+                }
+            } catch (error) {
+                hilangkanTypingIndicator();
+                console.error('Error:', error);
+                tampilkanPesan(`Maaf, terjadi kesalahan: ${error.message}`, 'bot');
+            } finally {
+                // Enable input kembali
+                input.disabled = false;
+                sendBtn.disabled = false;
+                input.focus();
+            }
+        }
+        
+        // Fungsi untuk menampilkan pesan
+        function tampilkanPesan(text, sender) {
+            const out = document.getElementById('out');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', `${sender}-message`);
+            
+            messageDiv.innerHTML = `
+                <div class="message-content markdown-content">${formatMarkdown(text)}</div>
+                <div class="time-stamp">${getCurrentTime()}</div>
+            `;
+            
+            out.appendChild(messageDiv);
+            out.scrollTop = out.scrollHeight;
+        }
+        
+        // Fungsi sederhana untuk format markdown
+        function formatMarkdown(text) {
+            // Heading
+            text = text.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+            text = text.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            text = text.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+            
+            // Bold
+            text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            text = text.replace(/__(.*?)__/g, '<strong>$1</strong>');
+            
+            // Italic
+            text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            text = text.replace(/_(.*?)_/g, '<em>$1</em>');
+            
+            // Code
+            text = text.replace(/`(.*?)`/g, '<code>$1</code>');
+            
+            // Block code
+            text = text.replace(/```([\s\S]*?)```/g, '<pre>$1</pre>');
+            
+            // Links
+            text = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            // Lists
+            text = text.replace(/^\s*\*\s(.*$)/gm, '<li>$1</li>');
+            text = text.replace(/^\s*-\s(.*$)/gm, '<li>$1</li>');
+            text = text.replace(/^\s*\d\.\s(.*$)/gm, '<li>$1</li>');
+            
+            // Paragraphs
+            text = text.replace(/\n\n/g, '</p><p>');
+            text = '<p>' + text + '</p>';
+            
+            return text;
+        }
+        
+        // Fungsi untuk menangani tombol Enter
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                kirimPesan();
+            }
+        }
+    </script>
+</body>
+</html>
